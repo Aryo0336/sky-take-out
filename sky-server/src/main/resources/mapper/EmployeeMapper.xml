@@ -24,7 +24,7 @@
             <if test="password != null and password != ''">
                 password = #{password},
             </if>
-            <if test="status != null and status != ''">
+            <if test="status != null">
                 status = #{status},
             </if>
         </set>

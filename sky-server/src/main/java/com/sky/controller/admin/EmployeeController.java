@@ -109,10 +109,28 @@ public class EmployeeController {
         return Result.success(employee);
     }
 
+    /**
+     * 更新员工信息
+     * @param employeeDTO
+     * @return
+     */
     @PutMapping
     public Result update(@RequestBody EmployeeDTO employeeDTO) {
         log.info("更新员工信息->{}", employeeDTO);
         employeeService.update(employeeDTO);
+        return Result.success();
+    }
+
+    /**
+     * 修改员工账号状态
+     * @param id
+     * @param status
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    public Result switchEmpStatus(@PathVariable Integer status, long id) {
+        log.info("切换员工账号状态id->{}, status->{}", id, status);
+        employeeService.switchEmpStatus(id, status);
         return Result.success();
     }
 }

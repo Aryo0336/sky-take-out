@@ -40,4 +40,11 @@ public interface EmployeeService {
      * @param employeeDTO
      */
     void update(EmployeeDTO employeeDTO);
+
+    /**
+     * 切换员工账号状态
+     * @param id
+     * @param status
+     */
+    void switchEmpStatus(long id, Integer status);
 }
