@@ -86,15 +86,14 @@ public class EmployeeController {
 
     /**
      * 员工分页查询
-     * @param name
-     * @param page
-     * @param pageSize
+     * @param empPageQueryDTO
      * @return
      */
     @GetMapping("/page")
-    public PageResult page(EmployeePageQueryDTO empPageQueryDTO) {
+    public Result<PageResult> page(EmployeePageQueryDTO empPageQueryDTO) {
         log.info("员工分页查询,name={},page={},pageSize={}",
                 empPageQueryDTO.getName(), empPageQueryDTO.getPage(), empPageQueryDTO.getPageSize());
-        return employeeService.page(empPageQueryDTO);
+        PageResult pageResult = employeeService.page(empPageQueryDTO);
+        return Result.success(pageResult);
     }
 }
