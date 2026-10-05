@@ -105,4 +105,33 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<Employee> records = page.getResult();
         return new PageResult(page.getTotal(), records);
     }
+
+    /**
+     * 根据员工id查询
+     * @param id
+     * @return
+     */
+    @Override
+    public Employee empQueryById(long id) {
+        return employeeMapper.empQueryById(id);
+    }
+
+    /**
+     * 更新员工信息
+     * @param employeeDTO
+     */
+    @Override
+    public void update( EmployeeDTO employeeDTO) {
+        Employee employee = Employee.builder()
+                        .id(employeeDTO.getId())
+                        .name(employeeDTO.getName())
+                        .username(employeeDTO.getUsername())
+                        .phone(employeeDTO.getPhone())
+                        .sex(employeeDTO.getSex())
+                        .idNumber(employeeDTO.getIdNumber())
+                        .updateTime(LocalDateTime.now())
+                        .updateUser(BaseContext.getCurrentId())
+                        .build();
+        employeeMapper.update(employee);
+    }
 }

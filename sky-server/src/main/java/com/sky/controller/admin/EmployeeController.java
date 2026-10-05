@@ -96,4 +96,23 @@ public class EmployeeController {
         PageResult pageResult = employeeService.page(empPageQueryDTO);
         return Result.success(pageResult);
     }
+
+    /**
+     * 根据员工id查询
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    public Result<Employee> empQueryById(@PathVariable long id) {
+        log.info("查询员工id={}", id);
+        Employee employee = employeeService.empQueryById(id);
+        return Result.success(employee);
+    }
+
+    @PutMapping
+    public Result update(@RequestBody EmployeeDTO employeeDTO) {
+        log.info("更新员工信息->{}", employeeDTO);
+        employeeService.update(employeeDTO);
+        return Result.success();
+    }
 }
