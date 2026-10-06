@@ -16,7 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -54,10 +57,19 @@ public class DishServiceImpl implements DishService {
      */
     @Override
     public PageResult pageQuery(DishPageQueryDTO dishPageQueryDTO) {
-        // 开启分页查询
+        // 开启分页查询(只分页菜品, 保证total正确)
         PageHelper.startPage(dishPageQueryDTO.getPage(), dishPageQueryDTO.getPageSize());
         Page<DishVO> records = dishMapper.pageQuery(dishPageQueryDTO);
         long total = records.getTotal();
+
+        // 批量查询当前页菜品的口味并填充, 避免一对多连表导致分页不准/数据重复
+        if (records != null && records.size() > 0) {
+            List<Long> dishIds = records.stream().map(DishVO::getId).collect(Collectors.toList());
+            List<DishFlavor> flavors = dishMapper.getFlavorsByDishIds(dishIds);
+            Map<Long, List<DishFlavor>> flavorMap = flavors.stream()
+                    .collect(Collectors.groupingBy(DishFlavor::getDishId));
+            records.forEach(d -> d.setFlavors(flavorMap.getOrDefault(d.getId(), Collections.emptyList())));
+        }
         return new PageResult(total, records);
     }
 

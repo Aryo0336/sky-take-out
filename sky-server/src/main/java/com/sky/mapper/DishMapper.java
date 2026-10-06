@@ -45,6 +45,13 @@ public interface DishMapper {
     Page<DishVO> pageQuery(DishPageQueryDTO dishPageQueryDTO);
 
     /**
+     * 批量根据菜品id查询口味
+     * @param dishIds
+     * @return
+     */
+    List<DishFlavor> getFlavorsByDishIds(List<Long> dishIds);
+
+    /**
      * 根据菜品id查询
      * @param id
      * @return

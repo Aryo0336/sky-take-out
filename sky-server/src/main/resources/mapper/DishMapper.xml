@@ -37,24 +37,19 @@
         </foreach>
     </insert>
 
-    <!--菜品分页查询-->
-    <select id="pageQuery" resultMap="dishVOWithFlavors">
+    <!--菜品分页查询(只查菜品本身, 口味单独批量查, 避免分页总数不准)-->
+    <select id="pageQuery" resultType="com.sky.vo.DishVO">
         select
             d.id,
             d.name,
-            c.id as category_id,
-            c.name as category_name,
+            c.id as categoryId,
+            c.name as categoryName,
             d.price,
             d.image,
             d.description,
             d.status,
-            d.update_time,
-            df.id as flavor_id,
-            df.dish_id as dish_id,
-            df.name as flavor_name,
-            df.value as value
+            d.update_time as updateTime
         from sky_take_out.dish as d
-        left join sky_take_out.dish_flavor as df on d.id = df.dish_id
         left join sky_take_out.category as c on d.category_id = c.id
         <where>
         <if test="name != null and name != ''">
@@ -68,6 +63,20 @@
         </if>
         </where>
         order by d.category_id, d.id
+    </select>
+
+    <!--批量根据菜品id查询口味(分页后用, 用于填充当前页菜品的口味列表)-->
+    <select id="getFlavorsByDishIds" resultType="com.sky.entity.DishFlavor">
+        select
+            id,
+            dish_id as dishId,
+            name,
+            value
+        from sky_take_out.dish_flavor
+        where dish_id in
+        <foreach collection="dishIds" item="dishId" open="(" separator="," close=")">
+            #{dishId}
+        </foreach>
     </select>
 
     <!--根据菜品id查询-->
