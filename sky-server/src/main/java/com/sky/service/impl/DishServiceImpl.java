@@ -78,12 +78,28 @@ public class DishServiceImpl implements DishService {
     @Transactional
     @Override
     public void update(DishDTO dishDTO) {
+        // 对象属性拷贝
+        Dish dish = new Dish();
+        BeanUtils.copyProperties(dishDTO, dish);
         // 1.更新菜品信息(不含口味)
-        dishMapper.update(dishDTO);
+        dishMapper.update(dish);
         // 2.更新菜品口味信息
         List<DishFlavor> flavors = dishDTO.getFlavors();
         if (flavors != null && !flavors.isEmpty()) {
             dishMapper.updateFlavors(flavors);
         }
+    }
+
+    /**
+     * 修改菜品状态
+     * @param id
+     * @param status
+     */
+    @Override
+    public void switchDishStatus(long id, Integer status) {
+        Dish dish = new Dish();
+        dish.setId(id);
+        dish.setStatus(status);
+        dishMapper.update(dish);
     }
 }

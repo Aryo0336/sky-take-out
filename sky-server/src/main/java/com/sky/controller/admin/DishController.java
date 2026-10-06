@@ -61,7 +61,11 @@ public class DishController {
         return Result.success(dishVO);
     }
 
-
+    /**
+     * 更新菜品信息
+     * @param dishDTO
+     * @return
+     */
     @PutMapping
     public Result update(@RequestBody DishDTO dishDTO) {
         log.info("更新菜品信息, id={},name={},flavors={},categoryId={},price={},image={},description={}",
@@ -73,6 +77,13 @@ public class DishController {
                 dishDTO.getImage(),
                 dishDTO.getDescription());
         dishService.update(dishDTO);
+        return Result.success();
+    }
+
+    @PostMapping("/status/{status}")
+    public Result switchDishStatus(long id, @PathVariable Integer status) {
+        log.info("修改菜品状态, id={}, status={}", id, status);
+        dishService.switchDishStatus(id, status);
         return Result.success();
     }
 }
