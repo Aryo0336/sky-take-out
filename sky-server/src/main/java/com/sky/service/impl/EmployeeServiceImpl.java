@@ -83,10 +83,6 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .sex(employeeDTO.getSex())
                 .password(encode)
                 .status(1) // 设置初始状态为启用
-                .createTime(LocalDateTime.now())
-                .updateTime(LocalDateTime.now())
-                .createUser(BaseContext.getCurrentId()) // 设置创建者
-                .updateUser(BaseContext.getCurrentId()) // 设置修改人
                 .build();
         employeeMapper.save(employee);
         BaseContext.removeCurrentId();
@@ -129,8 +125,6 @@ public class EmployeeServiceImpl implements EmployeeService {
                         .phone(employeeDTO.getPhone())
                         .sex(employeeDTO.getSex())
                         .idNumber(employeeDTO.getIdNumber())
-                        .updateTime(LocalDateTime.now())
-                        .updateUser(BaseContext.getCurrentId())
                         .build();
         employeeMapper.update(employee);
     }
