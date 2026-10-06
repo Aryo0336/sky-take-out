@@ -2,6 +2,7 @@ package com.sky.mapper;
 
 import com.github.pagehelper.Page;
 import com.sky.annotation.AutoFill;
+import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
@@ -42,4 +43,23 @@ public interface DishMapper {
      * @return
      */
     Page<DishVO> pageQuery(DishPageQueryDTO dishPageQueryDTO);
+
+    /**
+     * 根据菜品id查询
+     * @param id
+     * @return
+     */
+    DishVO queryById(long id);
+
+    /**
+     * 更新菜品信息
+     * @param dishDTO
+     */
+    void update(DishDTO dishDTO);
+
+    /**
+     * 更新菜品口味信息
+     * @param dishFlavors
+     */
+    void updateFlavors(List<DishFlavor> dishFlavors);
 }

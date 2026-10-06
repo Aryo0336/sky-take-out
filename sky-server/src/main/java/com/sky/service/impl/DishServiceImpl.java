@@ -60,4 +60,30 @@ public class DishServiceImpl implements DishService {
         long total = records.getTotal();
         return new PageResult(total, records);
     }
+
+    /**
+     * 根据id查询菜品
+     * @param id
+     * @return
+     */
+    @Override
+    public DishVO queryById(long id) {
+        return dishMapper.queryById(id);
+    }
+
+    /**
+     * 更新菜品信息
+     * @param dishDTO
+     */
+    @Transactional
+    @Override
+    public void update(DishDTO dishDTO) {
+        // 1.更新菜品信息(不含口味)
+        dishMapper.update(dishDTO);
+        // 2.更新菜品口味信息
+        List<DishFlavor> flavors = dishDTO.getFlavors();
+        if (flavors != null && !flavors.isEmpty()) {
+            dishMapper.updateFlavors(flavors);
+        }
+    }
 }

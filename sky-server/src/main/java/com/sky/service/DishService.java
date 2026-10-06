@@ -21,4 +21,17 @@ public interface DishService {
      * @return
      */
     PageResult pageQuery(DishPageQueryDTO dishPageQueryDTO);
+
+    /**
+     * 根据id查询菜品
+     * @param id
+     * @return
+     */
+    DishVO queryById(long id);
+
+    /**
+     * 更新菜品信息
+     * @param dishDTO
+     */
+    void update(DishDTO dishDTO);
 }
