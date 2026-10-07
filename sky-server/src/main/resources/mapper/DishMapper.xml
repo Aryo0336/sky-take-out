@@ -104,7 +104,7 @@
         order by d.category_id, d.id
     </select>
 
-    <!--更新菜品信息-->
+    <!--更新菜品信息(不含口味)-->
     <update id="update">
         update sky_take_out.dish
         <set>
@@ -136,23 +136,5 @@
         <where>
             id = #{id}
         </where>
-    </update>
-
-    <!--更新菜品口味-->
-    <update id="updateFlavors">
-        update sky_take_out.dish_flavor
-        <foreach collection="dishFlavors" item="flavor" separator=",">
-            <set>
-                <if test="flavor.name != null and flavor.name != ''">
-                    name = #{flavor.name},
-                </if>
-                <if test="flavor.value != null">
-                    value = #{flavor.value},
-                </if>
-            </set>
-            <where>
-                dish_id = #{flavor.dishId} and id = #{flavor.id}
-            </where>
-        </foreach>
     </update>
 </mapper>
