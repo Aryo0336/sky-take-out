@@ -67,10 +67,14 @@ public interface DishMapper {
     void update(Dish dish);
 
     /**
-     * 删除菜品口味信息
-     * @param dishId
+     * 批量删除菜品口味信息
+     * @param dishIds
      */
-    @Delete("delete from sky_take_out.dish_flavor where dish_id = #{dishId}")
-    void deleteDishFlavors(long dishId);
+    void deleteDishFlavors(List<Long> dishIds);
 
+    /**
+     * 批量删除菜品(不含口味)
+     * @param dishIds
+     */
+    void delete(List<Long> dishIds);
 }

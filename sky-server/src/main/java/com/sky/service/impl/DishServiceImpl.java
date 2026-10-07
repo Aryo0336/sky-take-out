@@ -96,10 +96,10 @@ public class DishServiceImpl implements DishService {
         // 1.更新菜品信息(不含口味)
         dishMapper.update(dish);
         // 2.更新菜品口味信息
-        dishMapper.deleteDishFlavors(dish.getId()); // 删除原有口味信息
+        Long dishId = dish.getId(); // 获取当前菜品id
+        dishMapper.deleteDishFlavors(List.of(dishId)); // 删除原有口味信息
         List<DishFlavor> flavors = dishDTO.getFlavors();
         if (flavors != null && !flavors.isEmpty()) {
-            long dishId = dish.getId(); // 获取当前菜品id
             flavors.forEach(df -> df.setDishId(dishId));
             dishMapper.saveFlavors(flavors); // 新增现有口味信息
         }
@@ -116,5 +116,18 @@ public class DishServiceImpl implements DishService {
         dish.setId(id);
         dish.setStatus(status);
         dishMapper.update(dish);
+    }
+
+    /**
+     *  批量删除菜品
+     * @param dishIds
+     */
+    @Transactional
+    @Override
+    public void delete(List<Long> dishIds) {
+        // 1. 删除菜品信息(不含口味)
+        dishMapper.delete(dishIds);
+        // 2. 删除菜品口味信息
+        dishMapper.deleteDishFlavors(dishIds);
     }
 }
