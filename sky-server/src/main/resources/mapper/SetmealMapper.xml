@@ -19,4 +19,42 @@
             (#{setmealId}, #{setmealDish.dishId}, #{setmealDish.name}, #{setmealDish.price}, #{setmealDish.copies})
         </foreach>
     </insert>
+
+    <!--套餐分页查询(不含菜品信息)-->
+    <select id="pageQuery" resultType="com.sky.vo.SetmealVO">
+        select s.id, s.category_id, s.name, s.price, s.image, s.description, s.status, s.update_time, c.name as category_name
+        from sky_take_out.setmeal as s
+        join sky_take_out.category as c on s.category_id = c.id
+        <where>
+            <if test="name != null and name != ''">
+                and s.name like concat('%', #{name}, '%')
+            </if>
+            <if test="categoryId != null">
+                and s.category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                and s.status = #{status}
+            </if>
+        </where>
+        order by s.category_id, s.id
+    </select>
+
+    <!--根据id查询套餐基本信息-->
+    <select id="queryById" resultType="com.sky.vo.SetmealVO">
+        select s.id, s.category_id, s.name, s.price, s.image, s.description, s.status, s.update_time, c.name as category_name
+        from sky_take_out.setmeal as s
+        join sky_take_out.category as c on s.category_id = c.id
+        <where>
+            and s.id = #{id}
+        </where>
+        order by s.category_id, s.id
+    </select>
+
+    <!--根据套餐id查询套餐所包含的菜品-->
+    <select id="querySetmealDish" resultType="com.sky.entity.SetmealDish">
+        select * from sky_take_out.setmeal_dish
+        <where>
+            and setmeal_id = #{setmealId}
+        </where>
+    </select>
 </mapper>

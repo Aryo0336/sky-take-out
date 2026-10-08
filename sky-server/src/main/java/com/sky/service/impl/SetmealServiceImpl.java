@@ -1,10 +1,15 @@
 package com.sky.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.sky.dto.SetmealDTO;
+import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
 import com.sky.mapper.SetmealMapper;
+import com.sky.result.PageResult;
 import com.sky.service.SetmealService;
+import com.sky.vo.SetmealVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,5 +42,34 @@ public class SetmealServiceImpl implements SetmealService {
         if (setmealDishes != null && !setmealDishes.isEmpty()) {
             setmealMapper.saveSetmealDish(setmeal.getId(), setmealDishes);
         }
+    }
+
+    /**
+     * 套餐分页查询
+     * @param setmealPageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult pageQuery(SetmealPageQueryDTO setmealPageQueryDTO) {
+        // 开始分页查询
+        PageHelper.startPage(setmealPageQueryDTO.getPage(), setmealPageQueryDTO.getPageSize());
+        // 执行分页查询
+        Page<SetmealVO> records = setmealMapper.pageQuery(setmealPageQueryDTO);
+        return new PageResult(records.getTotal(), records.getResult());
+    }
+
+    /**
+     * 根据id查询套餐
+     * @param id
+     * @return
+     */
+    @Override
+    public SetmealVO queryById(long id) {
+        // 1.查询套餐基本信息
+        SetmealVO setmealVO = setmealMapper.queryById(id);
+        // 2.查询套餐所包含的菜品
+        List<SetmealDish> setmealDishes = setmealMapper.querySetmealDish(id);
+        setmealVO.setSetmealDishes(setmealDishes);
+        return setmealVO;
     }
 }
