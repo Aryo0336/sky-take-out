@@ -60,6 +60,14 @@ public interface DishMapper {
     DishVO queryById(long id);
 
     /**
+     * 根据分类id查询菜品
+     * @param categoryId
+     * @return
+     */
+    @Select("select * from sky_take_out.dish where category_id = #{categoryId}")
+    List<Dish> queryByCategoryId(long categoryId);
+
+    /**
      * 更新菜品信息(不含口味)
      * @param dish
      */

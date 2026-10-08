@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.SetmealMapper">
+    <!--新增套餐基本信息-->
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        insert into sky_take_out.setmeal
+        (category_id, name, price, image, description, status, create_time, update_time, create_user, update_user)
+        values
+        (#{categoryId}, #{name}, #{price}, #{image}, #{description}, #{status}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})
+    </insert>
+
+    <!--新增套餐所包含的菜品信息-->
+    <insert id="saveSetmealDish">
+        insert into sky_take_out.setmeal_dish
+        (setmeal_id, dish_id, name, price, copies)
+        values
+        <foreach collection="setmealDishes" item="setmealDish" separator=",">
+            (#{setmealId}, #{setmealDish.dishId}, #{setmealDish.name}, #{setmealDish.price}, #{setmealDish.copies})
+        </foreach>
+    </insert>
+</mapper>
