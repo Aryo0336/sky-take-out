@@ -68,8 +68,13 @@ public interface SetmealMapper {
 
     /**
      * 删除套餐相关菜品信息
-     * @param setmealId
+     * @param setmealIds
      */
-    @Delete("delete from sky_take_out.setmeal_dish where setmeal_id = #{setmealId}")
-    void deleteSetmealDish(long setmealId);
+    void deleteSetmealDish(List<Long> setmealIds);
+
+    /**
+     * 批量删除套餐基本信息
+     * @param ids
+     */
+    void delete(List<Long> ids);
 }

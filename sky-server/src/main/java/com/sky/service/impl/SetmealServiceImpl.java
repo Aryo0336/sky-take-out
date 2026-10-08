@@ -100,7 +100,20 @@ public class SetmealServiceImpl implements SetmealService {
         setmealMapper.update(setmeal);
         // 2.更新套餐菜品信息
         long setmealId = setmeal.getId();
-        setmealMapper.deleteSetmealDish(setmealId); // 删除套餐相关菜品
+        setmealMapper.deleteSetmealDish(List.of(setmealId)); // 删除套餐相关菜品
         setmealMapper.saveSetmealDish(setmealId, setmealDTO.getSetmealDishes());
+    }
+
+    /**
+     * 批量删除taocan
+     * @param ids
+     */
+    @Transactional
+    @Override
+    public void delete(List<Long> ids) {
+        // 1.批量删除套餐基本信息
+        setmealMapper.delete(ids);
+        // 2.批量删除套餐所包含的菜品信息
+        setmealMapper.deleteSetmealDish(ids);
     }
 }
