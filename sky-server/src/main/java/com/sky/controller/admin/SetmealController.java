@@ -55,5 +55,30 @@ public class SetmealController {
         SetmealVO setmealVO = setmealService.queryById(id);
         return Result.success(setmealVO);
     }
+
+    /**
+     * 切换套餐状态
+     * @param status
+     * @param id
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    public Result switchStatus(@PathVariable Integer status, long id) {
+        log.info("切换套餐状态,id={},status={}", id, status);
+        setmealService.switchStatus(id, status);
+        return Result.success();
+    }
+
+    /**
+     * 更新套餐信息
+     * @param setmealDTO
+     * @return
+     */
+    @PutMapping
+    public Result update(@RequestBody SetmealDTO setmealDTO) {
+        log.info("更新套餐信息, {}", setmealDTO);
+        setmealService.update(setmealDTO);
+        return Result.success();
+    }
 }
 

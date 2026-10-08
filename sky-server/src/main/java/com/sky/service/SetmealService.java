@@ -26,4 +26,17 @@ public interface SetmealService {
      * @return
      */
     SetmealVO queryById(long id);
+
+    /**
+     * 切换套餐状态
+     * @param id
+     * @param status
+     */
+    void switchStatus(long id, Integer status);
+
+    /**
+     * 更新套餐信息
+     * @param setmealDTO
+     */
+    void update(SetmealDTO setmealDTO);
 }
