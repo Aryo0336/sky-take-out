@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
  * 配置类, 用于创建AliOssUtil对象
  */
 @Configuration
-@Component
 @Slf4j
 public class AliOssConfiguration {
     @Bean
