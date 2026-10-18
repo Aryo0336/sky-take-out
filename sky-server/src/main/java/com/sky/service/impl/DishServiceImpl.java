@@ -140,4 +140,22 @@ public class DishServiceImpl implements DishService {
         // 2. 删除菜品口味信息
         dishMapper.deleteDishFlavors(dishIds);
     }
+
+    /**
+     * 条件查询菜品和口味
+     * @param dish
+     * @return
+     */
+    public List<DishVO> listWithFlavor(Dish dish) {
+        // 查询菜品, 不包含口味
+        List<DishVO> dishVOS = dishMapper.listWithFlavor(dish);
+        // 查询菜品对应的口味
+        if (dishVOS != null && !dishVOS.isEmpty()) {
+            List<Long> dishIds = dishVOS.stream().map(DishVO::getId).collect(Collectors.toList());
+            List<DishFlavor> flavors = dishMapper.getFlavorsByDishIds(dishIds);
+            Map<Long, List<DishFlavor>> flavorMap = flavors.stream().collect(Collectors.groupingBy(DishFlavor::getDishId));
+            dishVOS.forEach(d -> d.setFlavors(flavorMap.getOrDefault(d.getId(), Collections.emptyList())));
+        }
+        return dishVOS;
+    }
 }

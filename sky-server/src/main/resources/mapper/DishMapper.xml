@@ -79,13 +79,13 @@
         left join sky_take_out.category as c on d.category_id = c.id
         <where>
         <if test="name != null and name != ''">
-            d.name like concat('%', #{name}, '%')
+            and d.name like concat('%', #{name}, '%')
         </if>
         <if test="categoryId != null">
-            d.category_id = #{categoryId}
+            and d.category_id = #{categoryId}
         </if>
         <if test="status != null">
-            d.status = #{status}
+            and d.status = #{status}
         </if>
         </where>
         order by d.category_id, d.id
@@ -103,6 +103,34 @@
         <foreach collection="dishIds" item="dishId" open="(" separator="," close=")">
             #{dishId}
         </foreach>
+    </select>
+
+    <!--条件查询(只查菜品本身, 口味单独批量查)-->
+    <select id="listWithFlavor" resultType="com.sky.vo.DishVO">
+        select
+        d.id,
+        d.name,
+        c.id as categoryId,
+        c.name as categoryName,
+        d.price,
+        d.image,
+        d.description,
+        d.status,
+        d.update_time as updateTime
+        from sky_take_out.dish as d
+        left join sky_take_out.category as c on d.category_id = c.id
+        <where>
+            <if test="name != null and name != ''">
+                and d.name like concat('%', #{name}, '%')
+            </if>
+            <if test="categoryId != null">
+                and d.category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                and d.status = #{status}
+            </if>
+        </where>
+        order by d.category_id, d.id
     </select>
 
     <!--根据菜品id查询-->

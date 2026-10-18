@@ -55,4 +55,11 @@ public interface DishService {
      * @param dishIds
      */
     void delete(List<Long> dishIds);
+
+    /**
+     * 条件查询菜品和口味
+     * @param dish
+     * @return
+     */
+    List<DishVO> listWithFlavor(Dish dish);
 }

@@ -85,4 +85,11 @@ public interface DishMapper {
      * @param dishIds
      */
     void delete(List<Long> dishIds);
+
+    /**
+     * 条件查询
+     * @param dish
+     * @return
+     */
+    List<DishVO> listWithFlavor(Dish dish);
 }
