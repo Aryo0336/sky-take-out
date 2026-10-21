@@ -13,8 +13,10 @@ import com.sky.vo.DishVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +36,7 @@ public class DishServiceImpl implements DishService {
      */
     @Transactional // 开启事务管理
     @Override
+    @CacheEvict(cacheNames = "category_", key = "#dishDTO.categoryId")
     public void save(DishDTO dishDTO) {
         // 对象属性拷贝
         Dish dish = new Dish();
@@ -99,6 +102,7 @@ public class DishServiceImpl implements DishService {
      */
     @Transactional
     @Override
+    @CacheEvict(cacheNames = "category_", allEntries = true)
     public void update(DishDTO dishDTO) {
         // 对象属性拷贝
         Dish dish = new Dish();
@@ -134,6 +138,7 @@ public class DishServiceImpl implements DishService {
      */
     @Transactional
     @Override
+    @CacheEvict(cacheNames = "category_", allEntries = true)
     public void delete(List<Long> dishIds) {
         // 1. 删除菜品信息(不含口味)
         dishMapper.delete(dishIds);
@@ -142,10 +147,12 @@ public class DishServiceImpl implements DishService {
     }
 
     /**
-     * 条件查询菜品和口味
+     * 根据分类id,条件查询菜品和口味
      * @param dish
      * @return
      */
+    @Override
+    @Cacheable(cacheNames = "category_", key = "#dish.categoryId")
     public List<DishVO> listWithFlavor(Dish dish) {
         // 查询菜品, 不包含口味
         List<DishVO> dishVOS = dishMapper.listWithFlavor(dish);

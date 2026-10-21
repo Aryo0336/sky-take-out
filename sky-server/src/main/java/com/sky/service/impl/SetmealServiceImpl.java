@@ -14,6 +14,8 @@ import com.sky.vo.SetmealVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +34,7 @@ public class SetmealServiceImpl implements SetmealService {
      */
     @Transactional
     @Override
+    @CacheEvict(cacheNames = "category_", key = "#setmealDTO.categoryId")
     public void save(SetmealDTO setmealDTO) {
         // 对象属性拷贝
         Setmeal setmeal = new Setmeal();
@@ -93,6 +96,7 @@ public class SetmealServiceImpl implements SetmealService {
      */
     @Transactional
     @Override
+    @CacheEvict(cacheNames = "category_", allEntries = true)
     public void update(SetmealDTO setmealDTO) {
         // 对象属性拷贝
         Setmeal setmeal = new Setmeal();
@@ -111,6 +115,7 @@ public class SetmealServiceImpl implements SetmealService {
      */
     @Transactional
     @Override
+    @CacheEvict(cacheNames = "category_", allEntries = true)
     public void delete(List<Long> ids) {
         // 1.批量删除套餐基本信息
         setmealMapper.delete(ids);
@@ -124,16 +129,18 @@ public class SetmealServiceImpl implements SetmealService {
      * @return
      */
     @Override
+    @Cacheable(cacheNames = "category_", key = "#setmeal.categoryId")
     public List<Setmeal> list(Setmeal setmeal) {
         return setmealMapper.list(setmeal);
     }
 
     /**
-     * 根据菜品id查询菜品选项
+     * 根据套餐id查询包含的菜品列表
      * @param id
      * @return
      */
     @Override
+    @Cacheable(cacheNames = "setmeal_", key = "#id")
     public List<DishItemVO> getDishItemById(Long id) {
         return setmealMapper.getDishItemBySetmealId(id);
     }
