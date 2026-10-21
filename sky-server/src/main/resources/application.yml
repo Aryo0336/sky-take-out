@@ -46,7 +46,7 @@ sky:
     # c端令牌
     user-secret-key: natsu-take-out
     user-ttl: 7200000
-    user-token-name:
+    user-token-name: authentication
 
   alioss:
     endpoint: ${sky.alioss.endpoint}
