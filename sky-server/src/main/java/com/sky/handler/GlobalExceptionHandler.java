@@ -40,4 +40,15 @@ public class GlobalExceptionHandler {
             return Result.error(MessageConstant.UNKNOWN_ERROR);
         }
     }
+
+    /**
+     * 兜底异常处理器，捕获所有未被识别的异常
+     * @param ex
+     * @return
+     */
+    @ExceptionHandler(value = Exception.class)
+    public Result exceptionHandler(Exception ex) {
+        log.error("未处理的异常", ex);
+        return Result.error(MessageConstant.UNKNOWN_ERROR);
+    }
 }
