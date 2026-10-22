@@ -16,6 +16,14 @@ public interface UserMapper {
     User getByOpenId(String openId);
 
     /**
+     * 根据id查询用户
+     * @param userId
+     * @return
+     */
+    @Select("select * from sky_take_out.user where id = #{userId}")
+    User getById(Long userId);
+
+    /**
      * 用户注册
      * @param user
      */

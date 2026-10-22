@@ -32,6 +32,7 @@
         <jaxb-api>2.3.1</jaxb-api>
         <poi>3.16</poi>
         <bcprov-jdk18on>1.78</bcprov-jdk18on>
+        <hutool>5.8.25</hutool>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -130,6 +131,13 @@
                 <groupId>com.github.wechatpay-apiv3</groupId>
                 <artifactId>wechatpay-apache-httpclient</artifactId>
                 <version>0.4.8</version>
+            </dependency>
+
+            <!-- hutool -->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

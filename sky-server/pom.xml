@@ -116,6 +116,12 @@
             <artifactId>poi-ooxml</artifactId>
         </dependency>
 
+        <!-- hutool -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+        </dependency>
+
         <!-- argon2passwd-encoder -->
         <dependency>
             <groupId>org.bouncycastle</groupId>
