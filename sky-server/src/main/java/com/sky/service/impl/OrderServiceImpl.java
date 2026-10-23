@@ -1,13 +1,18 @@
 package com.sky.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.sky.context.BaseContext;
+import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.entity.*;
 import com.sky.mapper.AddressBookMapper;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.ShoppingCartMapper;
 import com.sky.mapper.UserMapper;
+import com.sky.result.PageResult;
 import com.sky.service.OrderService;
+import com.sky.vo.HistoryOrderVO;
 import com.sky.vo.OrderSubmitVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -95,5 +100,37 @@ public class OrderServiceImpl implements OrderService {
         orderSubmitVO.setOrderNumber(orders.getNumber());
         orderSubmitVO.setOrderTime(now);
         return orderSubmitVO;
+    }
+
+    /**
+     * 历史订单查询
+     * @param ordersPageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult getHistoryOrders(OrdersPageQueryDTO ordersPageQueryDTO) {
+        PageResult pageResult = new PageResult();
+        // 开启分页查询
+        PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
+        // 1.查询历史订单(不含订单明细)
+        Page<Orders> page = orderMapper.getHistoryOrders(ordersPageQueryDTO);
+        long total = page.getTotal();
+        List<Orders> orders = page.getResult();
+        pageResult.setTotal(total);
+        // 2.查询订单明细
+        List<HistoryOrderVO> historyOrderVOS = new ArrayList<>();
+        if (orders != null && !orders.isEmpty()) {
+            for (Orders order : orders) {
+                Long orderId = order.getId();
+                // 订单明细
+                List<OrderDetail> orderDetailList = orderMapper.getHistoryOrderDetails(orderId);
+                HistoryOrderVO historyOrderVO = new HistoryOrderVO();
+                BeanUtils.copyProperties(order, historyOrderVO);
+                historyOrderVO.setOrderDetails(orderDetailList);
+                historyOrderVOS.add(historyOrderVO);
+            }
+        }
+        pageResult.setRecords(historyOrderVOS);
+        return pageResult;
     }
 }

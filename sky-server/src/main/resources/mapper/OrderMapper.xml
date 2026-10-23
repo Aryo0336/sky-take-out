@@ -25,4 +25,27 @@
             #{detail.setmealId}, #{detail.dishFlavor}, #{detail.number}, #{detail.amount})
         </foreach>
     </insert>
+
+    <!-- 历史订单查询(不包含订单明细) -->
+    <select id="getHistoryOrders" resultType="com.sky.entity.Orders">
+        select * from sky_take_out.orders
+        <where>
+            <if test="number != null">
+                number = #{number}
+            </if>
+            <if test="phone != null">
+                phone = #{phone}
+            </if>
+            <if test="status != null">
+                status = #{status}
+            </if>
+            <if test="beginTime != null and endTime != null">
+                order_time between #{beginTime} and #{endTime}
+            </if>
+            <if test="userId != null">
+                user_id = #{userId}
+            </if>
+        </where>
+        order by order_time desc
+    </select>
 </mapper>
