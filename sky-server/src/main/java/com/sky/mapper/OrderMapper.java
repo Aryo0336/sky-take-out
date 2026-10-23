@@ -5,6 +5,7 @@ import com.github.pagehelper.Page;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.OrderDetail;
 import com.sky.entity.Orders;
+import com.sky.vo.OrderVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -38,4 +39,12 @@ public interface OrderMapper {
      */
     @Select("select * from sky_take_out.order_detail where order_id = #{orderId}")
     List<OrderDetail> getHistoryOrderDetails(Long orderId);
+
+    /**
+     * 根据id查询订单详情
+     * @param orderId
+     * @return
+     */
+    @Select("select * from sky_take_out.orders where id = #{orderId}")
+    OrderVO getOrderDetailById(Long orderId);
 }

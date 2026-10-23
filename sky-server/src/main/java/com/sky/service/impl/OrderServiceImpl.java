@@ -14,6 +14,7 @@ import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.vo.HistoryOrderVO;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,25 +113,41 @@ public class OrderServiceImpl implements OrderService {
         PageResult pageResult = new PageResult();
         // 开启分页查询
         PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
+        ordersPageQueryDTO.setUserId(BaseContext.getCurrentId()); // 设置当前用户id
         // 1.查询历史订单(不含订单明细)
         Page<Orders> page = orderMapper.getHistoryOrders(ordersPageQueryDTO);
         long total = page.getTotal();
         List<Orders> orders = page.getResult();
         pageResult.setTotal(total);
         // 2.查询订单明细
-        List<HistoryOrderVO> historyOrderVOS = new ArrayList<>();
+        List<OrderVO> orderVOS = new ArrayList<>();
         if (orders != null && !orders.isEmpty()) {
             for (Orders order : orders) {
                 Long orderId = order.getId();
                 // 订单明细
                 List<OrderDetail> orderDetailList = orderMapper.getHistoryOrderDetails(orderId);
-                HistoryOrderVO historyOrderVO = new HistoryOrderVO();
-                BeanUtils.copyProperties(order, historyOrderVO);
-                historyOrderVO.setOrderDetails(orderDetailList);
-                historyOrderVOS.add(historyOrderVO);
+                OrderVO orderVO = new OrderVO();
+                BeanUtils.copyProperties(order, orderVO);
+                orderVO.setOrderDetailList(orderDetailList);
+                orderVOS.add(orderVO);
             }
         }
-        pageResult.setRecords(historyOrderVOS);
+        pageResult.setRecords(orderVOS);
         return pageResult;
+    }
+
+    /**
+     * 根据订单id查询订单详情
+     * @param id
+     * @return
+     */
+    @Override
+    public OrderVO getOrderDetailById(Long id) {
+        // 1.获取订单信息(不含明细)
+        OrderVO orderVO = orderMapper.getOrderDetailById(id);
+        // 2.获取订单明细
+        List<OrderDetail> orderDetail = orderMapper.getHistoryOrderDetails(id);
+        orderVO.setOrderDetailList(orderDetail);
+        return orderVO;
     }
 }
