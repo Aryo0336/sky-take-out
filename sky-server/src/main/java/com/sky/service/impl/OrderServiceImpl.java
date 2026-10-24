@@ -4,9 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.context.BaseContext;
-import com.sky.dto.OrdersPageQueryDTO;
-import com.sky.dto.OrdersPaymentDTO;
-import com.sky.dto.OrdersSubmitDTO;
+import com.sky.dto.*;
 import com.sky.entity.*;
 import com.sky.mapper.AddressBookMapper;
 import com.sky.mapper.OrderMapper;
@@ -14,6 +12,7 @@ import com.sky.mapper.ShoppingCartMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.result.PageResult;
 import com.sky.service.OrderService;
+import com.sky.service.ShoppingCartService;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
@@ -42,6 +41,8 @@ public class OrderServiceImpl implements OrderService {
     private ShoppingCartMapper shoppingCartMapper;
     @Autowired
     private WeChatPayUtil weChatPayUtil;
+    @Autowired
+    private ShoppingCartService shoppingCartService;
 
     // 生成订单号: 时间戳 + 用户id + 随机数
     private String getOrdersNumber() {
@@ -109,6 +110,40 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
+     * 再来一单
+     * @param id
+     */
+    @Override
+    public void repetitionSubmit(Long id) {
+        // 查询历史订单明细
+        List<OrderDetail> orderDetail = orderMapper.getHistoryOrderDetails(id);
+        // 添加菜品到购物车
+        for (OrderDetail detail : orderDetail) {
+            // 创建新购物车
+            ShoppingCartDTO shoppingCartDTO = new ShoppingCartDTO();
+            // 设置单个菜品信息
+            shoppingCartDTO.setDishId(detail.getDishId());
+            shoppingCartDTO.setSetmealId(detail.getSetmealId());
+            shoppingCartDTO.setDishFlavor(detail.getDishFlavor());
+            shoppingCartService.add(shoppingCartDTO);
+        }
+    }
+
+    /**
+     * 取消订单
+     * @param orderId
+     */
+    @Override
+    public void cancel(Long orderId, OrdersCancelDTO ordersCancelDTO) {
+        // 查询订单
+        Orders order = orderMapper.getById(orderId);
+        order.setCancelTime(LocalDateTime.now()); // 订单取消时间
+        order.setStatus(Orders.CANCELLED); // 订单状态, 已取消
+        order.setCancelReason(ordersCancelDTO.getCancelReason()); // 订单取消原因
+        orderMapper.update(order);
+    }
+
+    /**
      * 订单支付
      * @param ordersPaymentDTO
      * @return
@@ -147,7 +182,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 支付成功，修改订单状态
-     * @param outTradeNo
+     * @param currentOrder
      */
     @Override
     public void paySuccess(Orders currentOrder) {
@@ -166,7 +201,6 @@ public class OrderServiceImpl implements OrderService {
 
         orderMapper.update(orders);
     }
-
 
     /**
      * 历史订单查询

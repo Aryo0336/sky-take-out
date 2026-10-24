@@ -1,6 +1,7 @@
 package com.sky.controller.user;
 
 import com.sky.context.BaseContext;
+import com.sky.dto.OrdersCancelDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
@@ -71,5 +72,29 @@ public class OrderController {
         log.info("根据订单id查询订单明细");
         OrderVO orderVO = orderService.getOrderDetailById(id);
         return Result.success(orderVO);
+    }
+
+    /**
+     * 再来一单
+     * @param id
+     * @return
+     */
+    @PostMapping("/repetition/{id}")
+    public Result repetition(@PathVariable Long id)  {
+        log.info("再来一单, orderId:{}", id);
+        orderService.repetitionSubmit(id);
+        return Result.success();
+    }
+
+    /**
+     * 取消订单
+     * @param id
+     * @return
+     */
+    @PutMapping("/cancel/{id}")
+    public Result cancel(@PathVariable Long id, @RequestBody OrdersCancelDTO ordersCancelDTO) {
+        log.info("取消订单, orderId:{}", id);
+        orderService.cancel(id, ordersCancelDTO);
+        return Result.success();
     }
 }

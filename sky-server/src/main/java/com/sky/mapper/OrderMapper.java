@@ -55,6 +55,14 @@ public interface OrderMapper {
     Orders getByNumber(String orderNumber);
 
     /**
+     * 根据订单id查询订单
+     * @param orderId
+     * @return
+     */
+    @Select("select * from sky_take_out.orders where id = #{orderId}")
+    Orders getById(Long orderId);
+
+    /**
      * 修改订单信息
      * @param orders
      */
