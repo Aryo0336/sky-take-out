@@ -310,4 +310,56 @@ public class OrderServiceImpl implements OrderService {
     public OrderVO getDetails(Long id) {
         return getOrderDetailById(id);
     }
+
+    /**
+     * 接单
+     * @param ordersConfirmDTO
+     */
+    @Override
+    public void confirmOrder(OrdersConfirmDTO ordersConfirmDTO) {
+        ordersConfirmDTO.setStatus(Orders.CONFIRMED);
+        orderMapper.confirmOrder(ordersConfirmDTO);
+    }
+
+    /**
+     * 拒单
+     * @param ordersRejectionDTO
+     */
+    @Override
+    public void orderRejection(OrdersRejectionDTO ordersRejectionDTO) {
+        int status = Orders.CANCELLED;
+        orderMapper.orderRejection(ordersRejectionDTO, status);
+    }
+
+    /**
+     * 取消订单
+     * @param ordersCancelDTO
+     */
+    @Override
+    public void orderCancel(OrdersCancelDTO ordersCancelDTO) {
+        int status = Orders.CANCELLED;
+        LocalDateTime cancelTime = LocalDateTime.now();
+        orderMapper.orderCancel(ordersCancelDTO, status, cancelTime);
+    }
+
+    /**
+     * 完成订单
+     * @param id
+     */
+    @Override
+    public void orderComplete(Long id) {
+        int status = Orders.COMPLETED;
+        LocalDateTime completeTime = LocalDateTime.now();
+        orderMapper.orderComplete(id, status, completeTime);
+    }
+
+    /**
+     * 开始配送
+     * @param id
+     */
+    @Override
+    public void delivery(Long id) {
+        int status = Orders.DELIVERY_IN_PROGRESS;
+        orderMapper.delivery(id, status);
+    }
 }

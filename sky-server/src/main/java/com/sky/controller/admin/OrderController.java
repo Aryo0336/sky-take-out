@@ -1,6 +1,9 @@
 package com.sky.controller.admin;
 
+import com.sky.dto.OrdersCancelDTO;
+import com.sky.dto.OrdersConfirmDTO;
 import com.sky.dto.OrdersPageQueryDTO;
+import com.sky.dto.OrdersRejectionDTO;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
@@ -9,10 +12,7 @@ import com.sky.vo.OrderVO;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController("adminOrderController")
 @RequestMapping("/admin/order")
@@ -56,5 +56,65 @@ public class OrderController {
         log.info("查询订单详情");
         OrderVO details = orderService.getDetails(id);
         return Result.success(details);
+    }
+
+    /**
+     * 接单
+     * @param ordersConfirmDTO
+     * @return
+     */
+    @PutMapping("/confirm")
+    public Result confirmOrder(@RequestBody OrdersConfirmDTO ordersConfirmDTO) {
+        log.info("接单, orderId:{}", ordersConfirmDTO);
+        orderService.confirmOrder(ordersConfirmDTO);
+        return Result.success();
+    }
+
+    /**
+     * 拒单
+     * @param ordersRejectionDTO
+     * @return
+     */
+    @PutMapping("/rejection")
+    public Result orderRejection(@RequestBody OrdersRejectionDTO ordersRejectionDTO) {
+        log.info("拒单, {}", ordersRejectionDTO);
+        orderService.orderRejection(ordersRejectionDTO);
+        return Result.success();
+    }
+
+    /**
+     * 取消订单
+     * @param ordersCancelDTO
+     * @return
+     */
+    @PutMapping("/cancel")
+    public Result orderCancel(@RequestBody OrdersCancelDTO ordersCancelDTO) {
+        log.info("取消订单");
+        orderService.orderCancel(ordersCancelDTO);
+        return Result.success();
+    }
+
+    /**
+     * 开始配送
+     * @param id
+     * @return
+     */
+    @PutMapping("/delivery/{id}")
+    public Result delivery(@PathVariable Long id) {
+        log.info("开始配送, orderId:{}", id);
+        orderService.delivery(id);
+        return Result.success();
+    }
+
+    /**
+     * 完成订单
+     * @param id
+     * @return
+     */
+    @PutMapping("/complete/{id}")
+    public Result orderComplete(@PathVariable Long id) {
+        log.info("完成订单");
+        orderService.orderComplete(id);
+        return Result.success();
     }
 }
