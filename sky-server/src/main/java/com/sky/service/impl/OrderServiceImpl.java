@@ -15,6 +15,7 @@ import com.sky.service.OrderService;
 import com.sky.service.ShoppingCartService;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
+import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 import lombok.extern.slf4j.Slf4j;
@@ -243,10 +244,70 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderVO getOrderDetailById(Long id) {
         // 1.获取订单信息(不含明细)
-        OrderVO orderVO = orderMapper.getOrderDetailById(id);
+        OrderVO orderVO = orderMapper.getById(id);
         // 2.获取订单明细
         List<OrderDetail> orderDetail = orderMapper.getHistoryOrderDetails(id);
         orderVO.setOrderDetailList(orderDetail);
         return orderVO;
+    }
+
+    /**
+     * 管理端订单搜索
+     * @param ordersPageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO) {
+        PageResult pageResult = new PageResult();
+        // 开启分页查询
+        PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
+        ordersPageQueryDTO.setUserId(null); // 设置userId为null, 查询所有订单
+        // 1.查询历史订单(不含订单明细)
+        Page<Orders> page = orderMapper.getHistoryOrders(ordersPageQueryDTO);
+        long total = page.getTotal();
+        List<Orders> orders = page.getResult();
+        pageResult.setTotal(total);
+        // 2.查询订单明细
+        List<OrderVO> orderVOS = new ArrayList<>();
+        if (orders != null && !orders.isEmpty()) {
+            for (Orders order : orders) {
+                Long orderId = order.getId();
+                // 订单明细
+                List<OrderDetail> orderDetailList = orderMapper.getHistoryOrderDetails(orderId);
+                OrderVO orderVO = new OrderVO();
+                BeanUtils.copyProperties(order, orderVO);
+                // 订单菜品(String)
+                StringBuilder orderDishes = new StringBuilder();
+                for (OrderDetail orderDetail : orderDetailList) {
+                    String name = orderDetail.getName();
+                    Integer number = orderDetail.getNumber();
+                    orderDishes.append(name).append("x").append(number).append(";\r\n");
+                }
+                orderVO.setOrderDishes(orderDishes.toString());
+                orderVOS.add(orderVO);
+            }
+        }
+        pageResult.setRecords(orderVOS);
+        return pageResult;
+    }
+
+    /**
+     * 获取订单数量统计
+     *
+     * @return
+     */
+    @Override
+    public OrderStatisticsVO getStatistics() {
+        return orderMapper.getStatistics();
+    }
+
+    /**
+     * 根据订单id查询订单详情
+     * @param id
+     * @return
+     */
+    @Override
+    public OrderVO getDetails(Long id) {
+        return getOrderDetailById(id);
     }
 }

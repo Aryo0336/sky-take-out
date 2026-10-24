@@ -5,6 +5,7 @@ import com.github.pagehelper.Page;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.OrderDetail;
 import com.sky.entity.Orders;
+import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -45,7 +46,7 @@ public interface OrderMapper {
      * @return
      */
     @Select("select * from sky_take_out.orders where id = #{orderId}")
-    OrderVO getOrderDetailById(Long orderId);
+    OrderVO getById(Long orderId);
 
     /**
      * 根据订单号查询订单
@@ -55,18 +56,13 @@ public interface OrderMapper {
     Orders getByNumber(String orderNumber);
 
     /**
-     * 根据订单id查询订单
-     * @param orderId
-     * @return
-     */
-    @Select("select * from sky_take_out.orders where id = #{orderId}")
-    Orders getById(Long orderId);
-
-    /**
      * 修改订单信息
      * @param orders
      */
     void update(Orders orders);
 
-
+    /**
+     * 获取订单数量统计
+     */
+    OrderStatisticsVO getStatistics();
 }

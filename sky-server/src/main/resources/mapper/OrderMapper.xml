@@ -58,7 +58,6 @@
         where id = #{id}
     </update>
 
-
     <!-- 历史订单查询(不包含订单明细) -->
     <select id="getHistoryOrders" resultType="com.sky.entity.Orders">
         select * from sky_take_out.orders
@@ -80,5 +79,17 @@
             </if>
         </where>
         order by order_time desc
+    </select>
+
+    <select id="getStatistics" resultType="com.sky.vo.OrderStatisticsVO">
+        SELECT
+        COUNT(CASE WHEN status = 2 THEN 1 END) AS 'toBeConfirmed',
+        COUNT(CASE WHEN status = 3 THEN 1 END) AS 'confirmed',
+        COUNT(CASE WHEN status = 4 THEN 1 END) AS 'deliveryInProgress'
+        FROM sky_take_out.orders
+        <where>
+        <!-- 2为待接单, 3为待派送, 4为派送中 -->
+            status in (2, 3, 4)
+        </where>
     </select>
 </mapper>
