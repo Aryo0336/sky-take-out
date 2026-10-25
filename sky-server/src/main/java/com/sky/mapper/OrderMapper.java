@@ -120,4 +120,23 @@ public interface OrderMapper {
             "set status = #{status} " +
             "where id = #{id}")
     void delivery(Long id, int status);
+
+    /**
+     * 处理超时订单
+     * @param status
+     * @param timeout
+     */
+    @Update("update sky_take_out.orders set " +
+            "status = #{status}," +
+            "cancel_time = #{now}," +
+            "cancel_reason = #{cancelReason} " +
+            "where order_time < #{timeout}")
+    void processTimeoutOrder(int status, LocalDateTime timeout, LocalDateTime now, String cancelReason);
+
+    /**
+     * 处理配送状态异常订单
+     * @param status
+     */
+    @Update("update sky_take_out.orders set status = #{status} where status = #{deliveryStatus}")
+    void processDeliveringOrder(int status, int deliveryStatus);
 }
