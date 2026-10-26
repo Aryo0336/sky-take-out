@@ -18,15 +18,14 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -44,6 +43,12 @@ public class OrderServiceImpl implements OrderService {
     private WeChatPayUtil weChatPayUtil;
     @Autowired
     private ShoppingCartService shoppingCartService;
+    @Autowired
+    private WebSocketServer webSocketServer;
+
+    // websocket消息类型
+    private static final Integer HAS_NEW_ORDER = 1; // 来单提醒
+    private static final Integer REMINDER_ORDER = 2; // 客户催单
 
     // 生成订单号: 时间戳 + 用户id + 随机数
     private String getOrdersNumber() {
@@ -53,6 +58,16 @@ public class OrderServiceImpl implements OrderService {
         int random = new Random().nextInt(10000, 99999);
         stringBuilder.append(timeTemp).append(userId).append(random);
         return stringBuilder.toString();
+    }
+
+    // 向管理端推送订单消息
+    private void sendMessageToAdmin(Long orderId, String msg) {
+        JSONObject msgJson = new JSONObject();
+        msgJson.put("type", HAS_NEW_ORDER);
+        msgJson.put("orderId", orderId);
+        msgJson.put("content", msg);
+        String toAdminMsg = msgJson.toString();
+        webSocketServer.sendToAllClient(toAdminMsg);
     }
 
     /**
@@ -175,9 +190,12 @@ public class OrderServiceImpl implements OrderService {
 
         // 查询并设置订单id
         Orders ordersDB = orderMapper.getByNumber(ordersPaymentDTO.getOrderNumber());
-        vo.setOrderId(ordersDB.getId());
+        Long orderId = ordersDB.getId();
+        vo.setOrderId(orderId);
         // 无法实现微信支付功能, 直接修改订单状态
         paySuccess(ordersDB);
+        // 向管理端发送来单提醒
+        sendMessageToAdmin(orderId, "有新的订单");
         return vo;
     }
 
@@ -362,5 +380,14 @@ public class OrderServiceImpl implements OrderService {
     public void delivery(Long id) {
         int status = Orders.DELIVERY_IN_PROGRESS;
         orderMapper.delivery(id, status);
+    }
+
+    /**
+     * 客户催单
+     * @param id
+     */
+    @Override
+    public void reminder(Long id) {
+        sendMessageToAdmin(id, "客户催单");
     }
 }

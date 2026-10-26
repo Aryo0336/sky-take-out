@@ -97,4 +97,16 @@ public class OrderController {
         orderService.cancel(id, ordersCancelDTO);
         return Result.success();
     }
+
+    /**
+     * 客户催单
+     * @param id
+     * @return
+     */
+    @GetMapping("/reminder/{id}")
+    public Result reminder(@PathVariable Long id) {
+        log.info("催单, orderId:{}", id);
+        orderService.reminder(id);
+        return Result.success();
+    }
 }
