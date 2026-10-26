@@ -130,8 +130,8 @@ public interface OrderMapper {
             "status = #{status}," +
             "cancel_time = #{now}," +
             "cancel_reason = #{cancelReason} " +
-            "where order_time < #{timeout}")
-    void processTimeoutOrder(int status, LocalDateTime timeout, LocalDateTime now, String cancelReason);
+            "where order_time < #{timeout} and status = #{currentStatus}")
+    void processTimeoutOrder(int status, int currentStatus, LocalDateTime timeout, LocalDateTime now, String cancelReason);
 
     /**
      * 处理配送状态异常订单

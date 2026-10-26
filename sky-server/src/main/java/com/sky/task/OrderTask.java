@@ -32,14 +32,15 @@ public class OrderTask {
         LocalDateTime timeout = now.plusMinutes(-15);
         // 设置订单状态为已取消
         int status = Orders.CANCELLED;
-        orderMapper.processTimeoutOrder(status, timeout, now, PAY_TIMEOUT);
+        int currentStatus = Orders.PENDING_PAYMENT;
+        orderMapper.processTimeoutOrder(status, currentStatus, timeout, now, PAY_TIMEOUT);
     }
 
     /**
      * 处理配送状态异常的订单,
      * 每日凌晨1点执行一次
      */
-    @Scheduled(cron = "0 1 * * * *")
+    @Scheduled(cron = "0 0 1 * * ?")
     public void processDeliveringOrder() {
         log.info("处理配送状态异常订单");
         int status = Orders.CANCELLED; // 设置订单状态为已取消
