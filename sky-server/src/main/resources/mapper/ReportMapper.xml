@@ -11,4 +11,48 @@
         select count(case when create_time &lt; #{end} then 1 end)
         from sky_take_out.user
     </select>
+
+    <!-- 统计销量top10的菜品 -->
+    <select id="getTop10" resultType="com.sky.entity.Sales">
+        select n.name as name, count(n.name) as total
+        from (
+            select d.name
+            from sky_take_out.order_detail d left join sky_take_out.orders o on d.order_id = o.id
+            where o.order_time between #{begin} and #{end} and o.status = 5
+        ) as n
+        group by n.name
+        order by total desc
+        limit 10
+    </select>
+
+    <!-- 营业额统计 -->
+    <select id="getTurnoverStatistics" resultType="Long">
+        select sum(amount) as amountTotal
+        from sky_take_out.orders
+        where status = 5 and order_time between #{begin} and #{end};
+    </select>
+
+    <!-- 统计所有订单 -->
+    <select id="getAllOrderStatistics" resultType="Integer">
+        select
+            count(*) as orderCount
+            from sky_take_out.orders
+        union all
+        select
+            count(case when status = 5 then 1 end) as validOrderCount
+            from sky_take_out.orders;
+    </select>
+
+    <!-- 统计当天订单 -->
+    <select id="getTodayOrderStatistics">
+        select
+            count(case when order_time between #{begin}
+                and #{end} then 1 end) as orderCount
+            from sky_take_out.orders
+        union all
+        select
+            count(case when status = 5 and order_time between #{begin}
+                and #{end} then 1 end) as validOrderCount
+            from sky_take_out.orders;
+    </select>
 </mapper>
